@@ -8,9 +8,9 @@ import Link from "@tiptap/extension-link";
 import Highlight from "@tiptap/extension-highlight";
 import Toolbar, { Bubble as ToolbarBubble, Floating as ToolbarFloating } from "../components/Toolbar/Toolbar";
 
-
 import { api } from "../utils/api";
-import "../index.css";
+import "../css/index.css";
+
 
 export default function EditorPage() {
     const { id } = useParams();

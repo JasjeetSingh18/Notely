@@ -1,22 +1,19 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import "../landingPage.css";
+import "../css/landingPage.css";
 import previewImg from "../assets/notely-app-preview.png";
 import logo from "../assets/NotelyLogo.png";
 
 const LandingPage = () => {
   const navigate = useNavigate();
 
-
   const handleGetStarted = () => {
-    alert("Get Started clicked! This will redirect to sign up page.");
-    // TODO: Navigate to sign up page
-    // Example: navigate('/signup');
+    navigate("/auth");
   };
 
   const handleLogin = () => {
-    // Navigate to Documents page using React Router
-    navigate("/dashboard");
+    // Navigate to Auth page
+    navigate("/auth");
   };
 
   return (

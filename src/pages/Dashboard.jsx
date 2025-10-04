@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../utils/api";
-import "../dashboard.css";
+import "../css/dashboard.css";
 
 export default function Dashboard() {
     const [notes, setNotes] = useState([]);
