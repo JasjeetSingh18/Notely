@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import "../css/auth.css";
 import logo from "../assets/NotelyLogo.png";
 import background from "../assets/Notelybackground.mp4";
+import { signUpEmail, signInEmail, signInWithGoogle } from "/server/firebase.mjs";
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -47,46 +48,59 @@ const Auth = () => {
     e.preventDefault();
     setIsLoading(true);
 
-    if (isSignUp) {
-      // Sign Up validation
-      if (formData.password !== formData.confirmPassword) {
-        alert("Passwords don't match!");
-        setIsLoading(false);
-        return;
-      }
+    try {
+      if (isSignUp) {
+        if (formData.password !== formData.confirmPassword) {
+          alert("Passwords don't match!");
+          setIsLoading(false);
+          return;
+        }
+        if (!acceptTerms) {
+          alert("Please accept the terms and conditions");
+          setIsLoading(false);
+          return;
+        }
 
-      if (!acceptTerms) {
-        alert("Please accept the terms and conditions");
-        setIsLoading(false);
-        return;
-      }
+        // Firebase sign up
+        const userCredential = await signUpEmail(formData.email, formData.password);
+        const user = userCredential.user;
 
-      // Dummy signup function
-      setTimeout(() => {
+        // Save UID to localStorage
+        localStorage.setItem("uid", user.uid);
+
         alert(`Account created for: ${formData.email}`);
-        setIsLoading(false);
         navigate("/dashboard");
-      }, 1000);
-    } else {
-      // Sign In - dummy function
-      setTimeout(() => {
-        alert(`Signing in with: ${formData.email}`);
-        setIsLoading(false);
+
+      } else {
+        // Firebase sign in
+        const userCredential = await signInEmail(formData.email, formData.password);
+        const user = userCredential.user;
+
+        localStorage.setItem("uid", user.uid);
+
+        alert(`Signed in as: ${formData.email}`);
         navigate("/dashboard");
-      }, 1000);
+      }
+    } catch (err) {
+      console.error(err);
+      alert(err.message);
     }
+
+    setIsLoading(false);
   };
 
-  const handleGoogleAuth = () => {
+  const handleGoogleAuth = async () => {
     setIsLoading(true);
-    // Dummy Google auth
-    setTimeout(() => {
-      alert(
-        `Google ${isSignUp ? "Sign Up" : "Sign In"} clicked! (Dummy function)`
-      );
-      setIsLoading(false);
+    try {
+      const user = await signInWithGoogle();
+      localStorage.setItem("uid", user.uid);
+      alert(`Signed in with Google as: ${user.email}`);
       navigate("/dashboard");
-    }, 1000);
+    } catch (err) {
+      console.error(err);
+      alert(err.message);
+    }
+    setIsLoading(false);
   };
 
   const handleBackToHome = () => {
