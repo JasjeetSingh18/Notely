@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../utils/api";
+import { logOut, getUid } from "/server/firebase.mjs"; // <-- import logOut
 import "../css/dashboard.css";
 
 export default function Dashboard() {
@@ -8,6 +9,15 @@ export default function Dashboard() {
     const [q, setQ] = useState("");
     const nav = useNavigate();
 
+    // ---------- REDIRECT IF NOT LOGGED IN ----------
+    useEffect(() => {
+        const uid = getUid();
+        if (!uid) {
+            nav("/"); // redirect to landing page if no UID
+        }
+    }, [nav]);
+
+    // ---------- FETCH NOTES ----------
     useEffect(() => {
         (async () => {
             const list = await api("/api/docs"); // <-- from Mongo
@@ -20,11 +30,16 @@ export default function Dashboard() {
     );
 
     async function newDoc() {
-        const doc = await api("/api/docs", { method: "POST", body: {} }); // <-- create in Mongo
+        const doc = await api("/api/docs", { method: "POST", body: {} });
         nav(`/doc/${doc.id}`);
     }
 
-    // NEED TO ADD LINKS TO EACH OF THE CLASSNAMES
+    // ---------- SIGN OUT ----------
+    const handleSignOut = async () => {
+        await logOut(); // clears Firebase auth & localStorage
+        nav("/"); // redirect to landing page
+    };
+
     return (
         <div className="dash">
             <aside className="dash-side">
@@ -35,14 +50,10 @@ export default function Dashboard() {
                     <a>Trash</a>
                     <a>Account</a>
                     <a>Apps</a>
-
-                    <a className="signoutDash" >
-                        ⏻ Signout
+                    <a className="signoutDash" onClick={handleSignOut}>
+                        ⏻ Sign out
                     </a>
                 </nav>
-
-
-
             </aside>
 
             <main className="dash-main">

@@ -1,11 +1,20 @@
-import React from "react";
+import React, { useEffect } from "react"; 
 import { useNavigate } from "react-router-dom";
 import "../css/landingPage.css";
 import previewImg from "../assets/notely-app-preview.png";
 import logo from "../assets/NotelyLogo.png";
+import { getUid } from "/server/firebase.mjs";
+
 
 const LandingPage = () => {
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const uid = getUid();
+    if (uid) {
+      navigate("/dashboard");
+    }
+  }, [navigate]);
 
   const handleGetStarted = () => {
     navigate("/auth");
