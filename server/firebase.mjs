@@ -16,24 +16,26 @@ const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
 
 // ---------- AUTH HELPERS ----------
+// firebase.mjs
 export async function signUpEmail(email, password) {
   const userCred = await createUserWithEmailAndPassword(auth, email, password);
-  const uid = userCred.user.uid;
-  localStorage.setItem("uid", uid); // save for later
-  return uid;
+  const user = userCred.user;
+  localStorage.setItem("uid", user.uid);
+  return user; 
 }
 
 export async function signInEmail(email, password) {
   const userCred = await signInWithEmailAndPassword(auth, email, password);
-  const uid = userCred.user.uid;
-  localStorage.setItem("uid", uid);
-  return uid;
+  const user = userCred.user;
+  localStorage.setItem("uid", user.uid);
+  return user; 
 }
 
 export async function signInWithGoogle() {
   const result = await signInWithPopup(auth, googleProvider);
-  localStorage.setItem("uid", result.user.uid);
-  return result.user; // return full user object
+  const user = result.user;
+  localStorage.setItem("uid", user.uid);
+  return user;
 }
 export async function logOut() {
   await signOut(auth);

@@ -62,30 +62,25 @@ const handleSubmit = async (e) => {
     if (isSignUp) {
       if (formData.password !== formData.confirmPassword) {
         alert("Passwords don't match!");
+        setIsLoading(false);
         return;
       }
       if (!acceptTerms) {
         alert("Please accept the terms and conditions");
+        setIsLoading(false);
         return;
       }
 
-      const userCredential = await signUpEmail(formData.email, formData.password);
-      user = userCredential.user;
-      localStorage.setItem("uid", user.uid);
-      alert(`Account created for: ${formData.email}`);
+      user = await signUpEmail(formData.email, formData.password);
+
     } else {
-      const userCredential = await signInEmail(formData.email, formData.password);
-      const user = userCredential.user;
+      user = await signInEmail(formData.email, formData.password);
 
-      localStorage.setItem("uid", user.uid);
-      alert(`Signed in as: ${formData.email}`);
     }
 
-    // Direct navigation immediately after setting UID
     if (user?.uid) {
-      navigate("/dashboard");
+      navigate("/dashboard"); // ✅ safe redirect
     }
-
   } catch (err) {
     console.error(err);
     alert(err.message);
