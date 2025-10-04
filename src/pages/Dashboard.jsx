@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../utils/api";
+import "../dashboard.css";
 
 export default function Dashboard() {
     const [notes, setNotes] = useState([]);
@@ -23,6 +24,7 @@ export default function Dashboard() {
         nav(`/doc/${doc.id}`);
     }
 
+    // NEED TO ADD LINKS TO EACH OF THE CLASSNAMES
     return (
         <div className="dash">
             <aside className="dash-side">
@@ -33,7 +35,14 @@ export default function Dashboard() {
                     <a>Trash</a>
                     <a>Account</a>
                     <a>Apps</a>
+
+                    <a className="signoutDash" >
+                        ⏻ Signout
+                    </a>
                 </nav>
+
+
+
             </aside>
 
             <main className="dash-main">
