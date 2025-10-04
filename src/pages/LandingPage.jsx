@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import "../landingPage.css";
 import previewImg from "../assets/notely-app-preview.png";
@@ -6,13 +6,7 @@ import logo from "../assets/NotelyLogo.png";
 
 const LandingPage = () => {
   const navigate = useNavigate();
-  const [email, setEmail] = useState("");
 
-  const handleSubmit = () => {
-    if (email) {
-      alert(`Thanks for signing up with: ${email}`);
-    }
-  };
 
   const handleGetStarted = () => {
     alert("Get Started clicked! This will redirect to sign up page.");
