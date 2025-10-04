@@ -3,8 +3,12 @@ import 'dotenv/config';
 import express from 'express';
 import mongoose, { isValidObjectId } from 'mongoose';
 import cors from 'cors';
+import path from 'path';
+
 
 const app = express();
+const __dirname = path.resolve();
+
 app.use(express.json({ limit: '2mb' }));
 
 // CORS: allow your deployed frontend (or "*" during early testing)
@@ -50,7 +54,7 @@ function getOwner(req) {
 }
 
 // ---------- Routes ----------
-app.get('/api/health', (_req, res) => res.json({ ok: true, ts: Date.now() }));
+app.get('/api', (_req, res) => res.json({ ok: true, ts: Date.now() }));
 
 app.get('/api/docs', async (req, res) => {
     const owner = getOwner(req);
@@ -112,7 +116,16 @@ app.post('/api/ai/chat', (req, res) => {
     res.json({ answer: `Mock chat reply for: ${prompt}` });
 });
 
-app.get('/', (_req, res) => res.send('API is running. Try GET /api/health'));
+
+
+// ---------- Serve Vite Frontend ----------
+const FRONTEND_DIST = path.join(__dirname, '../dist'); // adjust if your dist folder is elsewhere
+app.use(express.static(FRONTEND_DIST));
+
+// SPA routing: send index.html for all non-API requests
+app.get('*', (req, res) => {
+    res.sendFile(path.join(FRONTEND_DIST, 'index.html'));
+});
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`API on http://localhost:${PORT}`));
