@@ -1,0 +1,128 @@
+/* Scoped styles so they don't leak out of the toolbar namespace */
+:root {
+    --tl-surface: #ffffff;
+    --tl-surface-subtle: #f8fafc;
+    --tl-border: #e5e7eb;
+    --tl-muted: #64748b;
+    --tl-active-bg: #eef2ff;
+    --tl-active-border: #c7d2fe;
+    --tl-active-text: #3730a3;
+}
+
+/* main toolbar */
+.tl-toolbar {
+    position: sticky;
+    top: 64px;
+    z-index: 5;
+    /* adjust top to your header height */
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    padding: .45rem;
+    background: var(--tl-surface);
+    border: 1px solid var(--tl-border);
+    border-radius: 12px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, .06);
+    margin-bottom: .6rem;
+    overflow-x: auto;
+}
+
+/* buttons inside toolbar/bubble/floating */
+.tl-btn {
+    padding: .32rem .6rem;
+    border: 1px solid var(--tl-border);
+    border-radius: 8px;
+    background: var(--tl-surface);
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .15s ease, border-color .15s ease, color .15s ease;
+}
+
+.tl-btn:hover {
+    background: var(--tl-surface-subtle);
+}
+
+.tl-btn.is-active {
+    background: var(--tl-active-bg);
+    border-color: var(--tl-active-border);
+    color: var(--tl-active-text);
+}
+
+.tl-btn.ghost {
+    background: transparent;
+    border-color: transparent;
+    color: var(--tl-muted);
+}
+
+.tl-btn:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+}
+
+.tl-sep {
+    width: 1px;
+    height: 22px;
+    background: var(--tl-border);
+    margin: 0 .2rem;
+}
+
+.tl-spacer {
+    flex: 1;
+}
+
+/* bubble & floating containers */
+.tl-bubble,
+.tl-floating {
+    display: flex;
+    gap: .35rem;
+    align-items: center;
+    padding: .35rem;
+    background: var(--tl-surface);
+    border: 1px solid var(--tl-border);
+    border-radius: 10px;
+    box-shadow: 0 6px 24px rgba(2, 6, 23, .08), 0 2px 8px rgba(2, 6, 23, .06);
+}
+
+/* optional: nicer editor content defaults */
+.prosemirror-content {
+    min-height: 65vh;
+    padding: 1rem 0;
+    line-height: 1.65;
+    font-size: 1.05rem;
+    outline: none;
+}
+
+.prosemirror-content h1 {
+    font-size: 1.9rem;
+    margin: 1rem 0 .4rem;
+}
+
+.prosemirror-content h2 {
+    font-size: 1.5rem;
+    margin: .9rem 0 .35rem;
+}
+
+.prosemirror-content h3 {
+    font-size: 1.25rem;
+    margin: .8rem 0 .3rem;
+}
+
+.prosemirror-content ul,
+.prosemirror-content ol {
+    margin: .5rem 0 .5rem 1.25rem;
+}
+
+.prosemirror-content blockquote {
+    margin: .75rem 0;
+    padding: .4rem .8rem;
+    border-left: 3px solid var(--tl-border);
+    background: var(--tl-surface-subtle);
+    border-radius: 8px;
+    color: var(--tl-muted);
+}
+
+.prosemirror-content hr {
+    border: 0;
+    border-top: 1px solid var(--tl-border);
+    margin: 1rem 0;
+}
