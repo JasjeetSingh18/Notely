@@ -32,11 +32,9 @@ export async function signInEmail(email, password) {
 
 export async function signInWithGoogle() {
   const result = await signInWithPopup(auth, googleProvider);
-  const uid = result.user.uid;
-  localStorage.setItem("uid", uid);
-  return uid;
+  localStorage.setItem("uid", result.user.uid);
+  return result.user; // return full user object
 }
-
 export async function logOut() {
   await signOut(auth);
   localStorage.removeItem("uid");
