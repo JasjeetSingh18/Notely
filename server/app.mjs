@@ -4,6 +4,22 @@ import express from 'express';
 import mongoose, { isValidObjectId } from 'mongoose';
 import cors from 'cors';
 import path from 'path';
+// server/firebaseAdmin.mjs
+import { initializeApp, cert, applicationDefault, getApps } from 'firebase-admin/app';
+import { getAuth } from 'firebase-admin/auth';
+import { getUid } from './firebase.mjs';
+
+
+if (!getApps().length) {
+    initializeApp({
+        credential: process.env.FIREBASE_SERVICE_ACCOUNT_JSON
+            ? cert(JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_JSON))
+            : applicationDefault(),
+    });
+}
+
+export const adminAuth = getAuth();
+
 
 
 const app = express();
@@ -48,6 +64,7 @@ const toClient = (d) => ({
     createdAt: d.createdAt,
     updatedAt: d.updatedAt,
 });
+
 
 function getOwner(req) {
     return (req.headers['x-owner'] && String(req.headers['x-owner']).trim()) || 'anon';

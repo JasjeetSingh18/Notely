@@ -1,11 +1,15 @@
-export async function api(path, { method = "GET", body, headers } = {}) {
+
+import { getUid } from "../../server/firebase.mjs";
+export async function api(path, { method = 'GET', body, headers } = {}) {
     const res = await fetch(path, {
         method,
-        headers: { "Content-Type": "application/json", ...(headers || {}) },
+        headers: {
+            'Content-Type': 'application/json',
+            'x-owner': getUid() || 'anon',      // <— send Firebase UID here
+            ...(headers || {}),
+        },
         body: body ? JSON.stringify(body) : undefined,
     });
-    const text = await res.text();
-    let data; try { data = text ? JSON.parse(text) : {}; } catch { data = { raw: text }; }
-    if (!res.ok) throw new Error(data?.error || `HTTP ${res.status}`);
-    return data;
+    if (!res.ok) throw new Error(await res.text());
+    return res.json();
 }
