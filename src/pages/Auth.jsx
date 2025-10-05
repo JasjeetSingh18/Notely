@@ -17,6 +17,7 @@ const Auth = () => {
 
   const [isSignUp, setIsSignUp] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [formError, setFormError] = useState("");
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -61,29 +62,28 @@ const handleSubmit = async (e) => {
 
     if (isSignUp) {
       if (formData.password !== formData.confirmPassword) {
-        alert("Passwords don't match!");
+        // show inline error instead of alert
+        setFormError("Passwords don't match!");
         setIsLoading(false);
         return;
       }
       if (!acceptTerms) {
-        alert("Please accept the terms and conditions");
+        setFormError("Please accept the terms and conditions");
         setIsLoading(false);
         return;
       }
 
       user = await signUpEmail(formData.email, formData.password);
-
     } else {
       user = await signInEmail(formData.email, formData.password);
-
     }
 
     if (user?.uid) {
-      navigate("/dashboard"); // ✅ safe redirect
+      navigate("/dashboard"); 
     }
   } catch (err) {
     console.error(err);
-    alert(err.message);
+    setFormError(err.message); // display in UI
   } finally {
     setIsLoading(false);
   }
@@ -92,18 +92,17 @@ const handleSubmit = async (e) => {
 const handleGoogleAuth = async () => {
   setIsLoading(true);
   try {
-    const userCredential = await signInWithGoogle(); // returns UserCredential
-    const user = userCredential.user; // actual Firebase User
+    const user = await signInWithGoogle(); // user is already Firebase User
 
-    if (user?.uid) { // optional chaining prevents errors
-      localStorage.setItem("uid", user.uid);
+    if (user?.uid) {
+      // localStorage is already set in firebase.mjs
       navigate("/dashboard");
     } else {
       throw new Error("Google sign-in failed: no user returned.");
     }
   } catch (err) {
     console.error(err);
-    alert(err.message);
+    setFormError(err.message); // show inline error instead of alert
   } finally {
     setIsLoading(false);
   }
@@ -170,6 +169,7 @@ const handleGoogleAuth = async () => {
                     required={isSignUp}
                   />
                 </div>
+                {formError && <p className="form-error">{formError}</p>}
                 <div className="form-group">
                   <label htmlFor="lastName" className="form-label">
                     Last name

@@ -8,6 +8,7 @@ import path from 'path';
 import { initializeApp, cert, applicationDefault, getApps } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
 import { getUid } from './firebase.mjs';
+import { promptAI } from './gemini.mjs';
 
 
 if (!getApps().length) {
@@ -128,9 +129,24 @@ app.post('/api/ai/inline', (req, res) => {
     const { prompt } = req.body ?? {};
     res.json({ answer: `Mock explanation for: ${prompt}` });
 });
-app.post('/api/ai/chat', (req, res) => {
+
+app.post("/api/ai/chat", async (req, res) => {
+  try {
     const { prompt } = req.body ?? {};
-    res.json({ answer: `Mock chat reply for: ${prompt}` });
+
+    if (!prompt) {
+      return res.status(400).json({ error: "Prompt is required" });
+    }
+
+    // Wait for the AI to finish
+    const answer = await promptAI(prompt);
+
+    // Send the full string as JSON
+    res.json({ answer });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to generate AI response" });
+  }
 });
 
 
