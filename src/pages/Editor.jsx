@@ -299,7 +299,7 @@ export default function EditorPage() {
 
   // Need to fix the placement of the toolbar ---------------------------
   return (
-    <div className={`app ${!chatVisible ? "chat-hidden" : ""}`}>
+    <div className={`editor-app ${!chatVisible ? "chat-hidden" : ""}`}>
       <header className="app-header">
         <div className="crumbs">
           <span className="home-dot" />{" "}

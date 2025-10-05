@@ -25,9 +25,9 @@ body,
   overflow: auto;
 }
 
-/* Only hide overflow when in the editor app */
-body:has(.app),
-#root:has(.app) {
+/* Only hide overflow when in the editor page */
+body:has(.editor-app),
+#root:has(.editor-app) {
   overflow: hidden;
 }
 
@@ -105,7 +105,7 @@ a {
 }
 
 /* EDITOR APP (header + content split) */
-.app {
+.editor-app {
   display: flex;
   flex-direction: column;
   height: 100vh;
