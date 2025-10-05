@@ -226,7 +226,7 @@ const Auth = () => {
                 required
               />
               {isSignUp && (
-                <p className="form-hint">Must be at least 8 characters long</p>
+                <p className="form-hint">Must be at least 6 characters long</p>
               )}
             </div>
 
@@ -272,18 +272,6 @@ const Auth = () => {
               </div>
             ) : (
               <div className="form-options">
-                <label className="checkbox-container">
-                  <input
-                    type="checkbox"
-                    className="checkbox"
-                    checked={rememberMe}
-                    onChange={(e) => setRememberMe(e.target.checked)}
-                  />
-                  <span className="checkbox-label">Remember me</span>
-                </label>
-                <button type="button" className="link-button">
-                  Forgot password?
-                </button>
               </div>
             )}
 

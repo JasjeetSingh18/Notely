@@ -34,6 +34,7 @@ export default function EditorPage() {
   const [toast, setToast] = useState("");
   const [lastMode, setLastMode] = useState(null);
   const [insertLabel, setInsertLabel] = useState("Insert");
+  const [chatVisible, setChatVisible] = useState(true);
   const NonEmptyDocument = Document.extend({
     content: "block+",
   });
@@ -147,6 +148,9 @@ export default function EditorPage() {
 
   // Sends selected text to AI → result appears in chat (not in note)
   async function askAIFromSelection(mode) {
+    // Show chat to display the AI response
+    setChatVisible(true);
+
     const selected = getSelectedText();
     if (!selected) {
       setToast("Please select some text first.");
@@ -295,7 +299,7 @@ export default function EditorPage() {
 
   // Need to fix the placement of the toolbar ---------------------------
   return (
-    <div className="app">
+    <div className={`app ${!chatVisible ? "chat-hidden" : ""}`}>
       <header className="app-header">
         <div className="crumbs">
           <span className="home-dot" />{" "}
@@ -342,14 +346,23 @@ export default function EditorPage() {
         </div>
       </header>
 
-      <div className="content">
+      <div className={`content ${!chatVisible ? "chat-hidden" : ""}`}>
         <div className="editor-panel">
           <Toolbar editor={editor} />
           <EditorContent editor={editor} />
         </div>
 
         <aside className="sidebar">
-          <div className="sidebar-header">AI Chat</div>
+          <div className="sidebar-header">
+            <span>AI Chat</span>
+            <button
+              className="toggle-chat-btn"
+              onClick={() => setChatVisible(false)}
+              title="Hide chat"
+            >
+              ×
+            </button>
+          </div>
           <div className="chat-scroll" ref={chatScrollRef}>
             {messages.map((m, i) => (
               <div key={i} className={`msg ${m.role}`}>
@@ -364,7 +377,7 @@ export default function EditorPage() {
           </div>
           <form className="composer" onSubmit={sendChat}>
             <textarea
-              placeholder="Ask AI"
+              placeholder="Ask AI anything about your notes..."
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => {
@@ -375,21 +388,43 @@ export default function EditorPage() {
               }}
             />
             <div className="composer-buttons">
-              <button type="submit" className="btn primary">
-                {sending ? "Sending…" : "Send"}
-              </button>
               <button
                 type="button"
                 className="btn ghost"
-                disabled={sending} // prevents clicking while generating
+                disabled={sending}
                 onClick={() => insertLatestAIResponse("expand")}
+                title="Insert last AI response into your notes"
               >
                 {insertLabel}
+              </button>
+              <button type="submit" className="btn primary" disabled={sending}>
+                {sending ? "Sending…" : "Send"}
               </button>
             </div>
           </form>
         </aside>
       </div>
+      {!chatVisible && (
+        <button
+          className="floating-chat-toggle"
+          onClick={() => setChatVisible(true)}
+          title="Show chat"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="28"
+            height="28"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+          </svg>
+        </button>
+      )}
       {toast && <div className="toast">{toast}</div>}
     </div>
   );

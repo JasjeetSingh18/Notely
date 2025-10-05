@@ -1,128 +1,126 @@
 /* Scoped styles so they don't leak out of the toolbar namespace */
 :root {
-    --tl-surface: #ffffff;
-    --tl-surface-subtle: #f8fafc;
-    --tl-border: #e5e7eb;
-    --tl-muted: #64748b;
-    --tl-active-bg: #eef2ff;
-    --tl-active-border: #c7d2fe;
-    --tl-active-text: #3730a3;
+  --tl-surface: #edf2fa;
+  --tl-surface-subtle: #f1f3f4;
+  --tl-border: #dadce0;
+  --tl-border-light: #e8eaed;
+  --tl-muted: #5f6368;
+  --tl-active-bg: #d3e3fd;
+  --tl-active-border: #a8c7fa;
+  --tl-active-text: #1a73e8;
 }
 
-/* main toolbar */
+/* main toolbar - Google Docs style */
 .tl-toolbar {
-    position: sticky;
-    top: 64px;
-    z-index: 5;
-    /* adjust top to your header height */
-    display: flex;
-    align-items: center;
-    gap: .5rem;
-    padding: .45rem;
-    background: var(--tl-surface);
-    border: 1px solid var(--tl-border);
-    border-radius: 12px;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, .06);
-    margin-bottom: .6rem;
-    overflow-x: auto;
+  position: fixed;
+  top: 64px;
+  left: 0;
+  right: 420px;
+  z-index: 90;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 8px 48px;
+  background: rgba(237, 242, 250, 0.95);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--tl-border-light);
+  box-shadow: 0 1px 3px rgba(60, 64, 67, 0.1), 0 1px 2px rgba(60, 64, 67, 0.06);
+  overflow: hidden;
+  height: 48px;
+  transition: right 0.3s ease;
 }
 
-/* buttons inside toolbar/bubble/floating */
+.chat-hidden .tl-toolbar {
+  right: 0;
+}
+
+/* buttons inside toolbar/bubble/floating - Google Docs style */
 .tl-btn {
-    padding: .32rem .6rem;
-    border: 1px solid var(--tl-border);
-    border-radius: 8px;
-    background: var(--tl-surface);
-    font-weight: 600;
-    cursor: pointer;
-    transition: background .15s ease, border-color .15s ease, color .15s ease;
+  padding: 6px 8px;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  font-weight: 500;
+  font-size: 14px;
+  color: var(--tl-muted);
+  cursor: pointer;
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  min-width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.tl-btn::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(60, 64, 67, 0.1);
+  transform: translate(-50%, -50%);
+  transition: width 0.3s, height 0.3s;
+}
+
+.tl-btn:active::before {
+  width: 100px;
+  height: 100px;
 }
 
 .tl-btn:hover {
-    background: var(--tl-surface-subtle);
+  background: rgba(60, 64, 67, 0.08);
+  color: var(--tl-active-text);
 }
 
 .tl-btn.is-active {
-    background: var(--tl-active-bg);
-    border-color: var(--tl-active-border);
-    color: var(--tl-active-text);
+  background: var(--tl-active-bg);
+  color: var(--tl-active-text);
+  box-shadow: 0 0 0 1px var(--tl-active-border);
 }
 
 .tl-btn.ghost {
-    background: transparent;
-    border-color: transparent;
-    color: var(--tl-muted);
+  background: transparent;
+  color: var(--tl-muted);
 }
 
 .tl-btn:disabled {
-    opacity: .5;
-    cursor: not-allowed;
+  opacity: 0.38;
+  cursor: not-allowed;
 }
 
 .tl-sep {
-    width: 1px;
-    height: 22px;
-    background: var(--tl-border);
-    margin: 0 .2rem;
+  width: 1px;
+  height: 24px;
+  background: var(--tl-border-light);
+  margin: 0 4px;
 }
 
 .tl-spacer {
-    flex: 1;
+  flex: 1;
 }
 
-/* bubble & floating containers */
+/* bubble & floating containers - Google Docs style */
 .tl-bubble,
 .tl-floating {
-    display: flex;
-    gap: .35rem;
-    align-items: center;
-    padding: .35rem;
-    background: var(--tl-surface);
-    border: 1px solid var(--tl-border);
-    border-radius: 10px;
-    box-shadow: 0 6px 24px rgba(2, 6, 23, .08), 0 2px 8px rgba(2, 6, 23, .06);
+  display: flex;
+  gap: 2px;
+  align-items: center;
+  padding: 4px;
+  background: #fff;
+  border: 1px solid var(--tl-border-light);
+  border-radius: 8px;
+  box-shadow: 0 1px 2px 0 rgba(60, 64, 67, 0.3),
+    0 2px 6px 2px rgba(60, 64, 67, 0.15);
 }
 
-/* optional: nicer editor content defaults */
+/* Google Docs paper styling */
 .prosemirror-content {
-    min-height: 65vh;
-    padding: 1rem 0;
-    line-height: 1.65;
-    font-size: 1.05rem;
-    outline: none;
-}
-
-.prosemirror-content h1 {
-    font-size: 1.9rem;
-    margin: 1rem 0 .4rem;
-}
-
-.prosemirror-content h2 {
-    font-size: 1.5rem;
-    margin: .9rem 0 .35rem;
-}
-
-.prosemirror-content h3 {
-    font-size: 1.25rem;
-    margin: .8rem 0 .3rem;
-}
-
-.prosemirror-content ul,
-.prosemirror-content ol {
-    margin: .5rem 0 .5rem 1.25rem;
-}
-
-.prosemirror-content blockquote {
-    margin: .75rem 0;
-    padding: .4rem .8rem;
-    border-left: 3px solid var(--tl-border);
-    background: var(--tl-surface-subtle);
-    border-radius: 8px;
-    color: var(--tl-muted);
-}
-
-.prosemirror-content hr {
-    border: 0;
-    border-top: 1px solid var(--tl-border);
-    margin: 1rem 0;
+  min-height: 11in;
+  outline: none;
 }

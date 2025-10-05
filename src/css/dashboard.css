@@ -372,16 +372,91 @@
 }
 
 .empty {
-  color: #9ca3af;
-  text-align: center;
-  padding: 48px 24px;
   grid-column: 1 / -1;
-  font-size: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 24px;
+  text-align: center;
+  animation: fadeIn 0.5s ease-out;
 }
 
-.empty b {
-  color: #3b82f6;
+.empty-icon {
+  font-size: 64px;
+  margin-bottom: 24px;
+  opacity: 0.9;
+  animation: floatIcon 3s ease-in-out infinite;
+}
+
+.empty-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 8px 0;
+  letter-spacing: -0.5px;
+}
+
+.empty-text {
+  font-size: 16px;
+  color: #6b7280;
+  margin: 0 0 32px 0;
+  max-width: 400px;
+}
+
+.empty-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 28px;
+  background: linear-gradient(135deg, #0f3460 0%, #1a73e8 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
   font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(15, 52, 96, 0.2);
+}
+
+.empty-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(15, 52, 96, 0.3);
+}
+
+.empty-cta:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(15, 52, 96, 0.2);
+}
+
+.empty-cta svg {
+  transition: transform 0.3s ease;
+}
+
+.empty-cta:hover svg {
+  transform: rotate(90deg);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes floatIcon {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
 }
 
 .signoutDash {
@@ -415,22 +490,22 @@
   width: 56px;
   height: 56px;
   border-radius: 50%;
-  background: #3b82f6;
+  background: linear-gradient(135deg, #0f3460 0%, #1a73e8 100%);
   color: white;
   border: none;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+  box-shadow: 0 4px 12px rgba(15, 52, 96, 0.4);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   z-index: 2;
 }
 
 .fab-main:hover {
-  background: #2563eb;
-  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.5);
+  background: linear-gradient(135deg, #0c2a4d 0%, #1557b0 100%);
+  box-shadow: 0 6px 20px rgba(15, 52, 96, 0.5);
   transform: rotate(45deg);
 }
 
@@ -482,10 +557,10 @@
 
 .fab-item:hover {
   background: #f9fafb;
-  border-color: #3b82f6;
-  color: #3b82f6;
+  border-color: #1a73e8;
+  color: #0f3460;
   transform: translateY(0) scale(1.05);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 6px 16px rgba(15, 52, 96, 0.15);
 }
 
 /* Delete Confirmation Modal */
