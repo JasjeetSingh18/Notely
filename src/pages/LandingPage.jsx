@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import "../css/landingPage.css";
 import previewImg from "../assets/notely-app-preview.png";
 import logo from "../assets/NotelyLogo.png";
-import { getUid } from "../utils/firebase";
+import { getUid } from "/server/firebase.mjs";
 
 
 const LandingPage = () => {

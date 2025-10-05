@@ -23,21 +23,6 @@
     "react-dom": "^19.1.1",
     "react-router-dom": "^7.9.3"
   },
-  "dependencies": {
-    "@tiptap/extension-heading": "^3.6.5",
-    "@tiptap/extension-highlight": "^3.6.5",
-    "@tiptap/extension-link": "^3.6.5",
-    "@tiptap/extension-placeholder": "^3.6.5",
-    "@tiptap/extension-underline": "^3.6.5",
-    "@tiptap/react": "^3.6.5",
-    "@tiptap/starter-kit": "^3.6.5",
-    "express": "^5.1.0",
-    "firebase": "^12.3.0",
-    "react": "^19.1.1",
-    "react-dom": "^19.1.1",
-    "react-router-dom": "^7.9.3",
-    "mongoose": "^8.19.0"
-  },
   "devDependencies": {
     "@eslint/js": "^9.36.0",
     "@types/react": "^19.1.16",
