@@ -55,6 +55,14 @@ export default function EditorPage() {
             try {
                 const doc = await api(`/api/docs/${id}`);
                 editor?.commands?.setContent(doc.contentHtml || "<h1>Untitled doc</h1><p></p>");
+
+                const chatRes = await api(`/api/docs/${id}/chat`);
+                const loadedMessages = chatRes.messages?.length
+                    ? chatRes.messages
+                    : [{ role: "assistant", content: "Hi! Select text and click Ask AI, or send a chat." }];
+
+                setMessages(loadedMessages);
+
                 setLoaded(true);
             } catch {
                 nav("/"); // not found -> back to dashboard
@@ -66,20 +74,6 @@ export default function EditorPage() {
     if (!editor || !loaded) return null;
 
 
-    // ---- Title save on blur ----
-    async function saveTitle() {
-        setSaving(true);
-        try {
-            await fetch(`/api/docs/${id}`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ title }),
-            });
-        } finally {
-            setSaving(false);
-        }
-    }
-
 
     // Can add the extra functionality for the ai prompt here when we get to that.
     function getSelectedText() {
@@ -87,58 +81,75 @@ export default function EditorPage() {
         return editor.state.doc.textBetween(from, to, " ");
     }
 
-    async function askAIFromSelection() {
-        const selected = getSelectedText();
-        if (!selected) {
-            setMessages(m => [...m, { role: "assistant", content: "Select some text first." }]);
-            return;
-        }
-        try {
-            const res = await fetch("/api/ai/inline", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ prompt: `Explain briefly: ${selected}`, contextHtml: editor.getHTML() }),
-            });
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            const data = await res.json();
-            editor.chain().focus().insertContent(`<blockquote>${escapeHtml(data.answer)}</blockquote>`).run();
-            setMessages(m => [...m, { role: "user", content: selected }, { role: "assistant", content: data.answer }]);
-        } catch {
-            const mock = `Mock answer for "${selected}". (Start Express for real /api.)`;
-            editor.chain().focus().insertContent(`<blockquote>${escapeHtml(mock)}</blockquote>`).run();
-            setMessages(m => [...m, { role: "user", content: selected }, { role: "assistant", content: mock }]);
-        }
+async function askAIFromSelection() {
+    const selected = getSelectedText();
+    if (!selected) {
+        addMessages([{ role: "assistant", content: "Select some text first." }]);
+        return;
     }
 
-    async function sendChat(e) {
-        e?.preventDefault?.();
-        const prompt = input.trim();
-        if (!prompt || sending) return;
+    try {
+        const res = await fetch("/api/ai/inline", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ prompt: `Explain briefly: ${selected}`, contextHtml: editor.getHTML() }),
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
 
-        setMessages(m => [...m, { role: "user", content: prompt }]);
-        setInput("");
-        setSending(true);
-
-        try {
-            // quick ping so you see something in Network for sure
-            const ping = await fetch("/api/health");
-            console.log("health status", ping.status);
-
-            const res = await fetch("/api/ai/chat", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ prompt, contextHtml: editor?.getHTML?.() ?? "" }),
-            });
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            const data = await res.json();
-            setMessages(m => [...m, { role: "assistant", content: data?.answer ?? "(no answer)" }]);
-        } catch (err) {
-            console.error("sendChat error:", err);
-            setMessages(m => [...m, { role: "assistant", content: "(Mock) Start Express or fix /api/ai/chat" }]);
-        } finally {
-            setSending(false);
-        }
+        editor.chain().focus().insertContent(`<blockquote>${escapeHtml(data.answer)}</blockquote>`).run();
+        addMessages([
+            { role: "user", content: selected },
+            { role: "assistant", content: data.answer },
+        ]);
+    } catch {
+        const mock = `Mock answer for "${selected}". (Start Express for real /api.)`;
+        editor.chain().focus().insertContent(`<blockquote>${escapeHtml(mock)}</blockquote>`).run();
+        addMessages([
+            { role: "user", content: selected },
+            { role: "assistant", content: mock },
+        ]);
     }
+}
+
+    async function addMessages(newMessages) {
+    setMessages((prev) => {
+        const updated = [...prev, ...newMessages];
+        // Save to Mongo
+        api(`/api/docs/${id}/chat`, {
+        method: "PUT",
+        body: { messages: updated },
+        }).catch((err) => console.error("Chat save failed:", err));
+        return updated;
+    });
+    }
+
+async function sendChat(e) {
+    e?.preventDefault?.();
+    const prompt = input.trim();
+    if (!prompt || sending) return;
+
+    addMessages([{ role: "user", content: prompt }]);
+    setInput("");
+    setSending(true);
+
+    try {
+        const res = await fetch("/api/ai/chat", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ prompt, contextHtml: editor?.getHTML?.() ?? "" }),
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+
+        addMessages([{ role: "assistant", content: data?.answer ?? "(no answer)" }]);
+    } catch (err) {
+        console.error("sendChat error:", err);
+        addMessages([{ role: "assistant", content: "(Mock) Start Express or fix /api/ai/chat" }]);
+    } finally {
+        setSending(false);
+    }
+}
 
     // Default display when we open a document.
 

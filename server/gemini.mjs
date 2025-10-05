@@ -8,7 +8,7 @@ export async function promptAI(prompt) {
   const responseChunks = [];
 
   const streamResp = await ai.models.generateContentStream({
-    model: "gemini-2.5-pro", //Change model here
+    model: "gemini-2.5-flash-lite", //Change model here
     contents: [{ role: "user", parts: [{ text: prompt }] }],
   });
 

@@ -157,10 +157,11 @@ a {
 }
 
 .chat-scroll {
-  overflow: auto;
-  padding: 12px;
-  display: grid;
-  gap: 10px;
+  flex: 1;
+  overflow-y: auto;
+  max-height: calc(100vh - 180px);
+  padding-right: 8px;
+  scroll-behavior: smooth;
 }
 
 .msg {

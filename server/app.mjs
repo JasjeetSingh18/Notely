@@ -10,7 +10,6 @@ import { getAuth } from 'firebase-admin/auth';
 import { getUid } from './firebase.mjs';
 import { promptAI } from './gemini.mjs';
 
-
 if (!getApps().length) {
     initializeApp({
         credential: process.env.FIREBASE_SERVICE_ACCOUNT_JSON
@@ -52,6 +51,12 @@ const docSchema = new mongoose.Schema(
         owner: { type: String, index: true, default: 'anon' },
         title: { type: String, default: 'Untitled doc' },
         contentHtml: { type: String, default: '<h1>Untitled doc</h1><p></p>' },
+        chat: [
+            {
+            role: String,
+            content: String,
+            },
+        ],
     },
     { timestamps: true }
 );
@@ -128,6 +133,22 @@ app.delete('/api/docs/:id', async (req, res) => {
 app.post('/api/ai/inline', (req, res) => {
     const { prompt } = req.body ?? {};
     res.json({ answer: `Mock explanation for: ${prompt}` });
+});
+
+
+app.get("/api/docs/:id/chat", async (req, res) => {
+  const doc = await Doc.findById(req.params.id);
+  res.json({ messages: doc.chat || [] });
+});
+
+app.put("/api/docs/:id/chat", async (req, res) => {
+  const { messages } = req.body;
+  const doc = await Doc.findByIdAndUpdate(
+    req.params.id,
+    { chat: messages },
+    { new: true }
+  );
+  res.json({ messages: doc.chat });
 });
 
 app.post("/api/ai/chat", async (req, res) => {
