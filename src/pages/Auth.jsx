@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import "../css/auth.css";
 import logo from "../assets/NotelyLogo.png";
 import background from "../assets/Notelybackground.mp4";
-import {getUid, signUpEmail, signInEmail, signInWithGoogle } from "/server/firebase.mjs";
+import { getUid, signUpEmail, signInEmail, signInWithGoogle } from "../utils/firebase";
 
 const Auth = () => {
   const navigate = useNavigate();
