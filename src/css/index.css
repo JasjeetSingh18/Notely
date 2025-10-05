@@ -197,6 +197,7 @@ a {
   padding: 12px;
   display: grid;
   grid-template-columns: 1fr auto;
+  align-items: stretch;
   gap: 8px;
   background: #fff;
 }
@@ -211,4 +212,51 @@ a {
   font: inherit;
 }
 
+/* Stack both buttons vertically beside textarea */
+.composer .button-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+/* Button styling */
+.composer .btn {
+  padding: 8px 10px;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  width: 100px;
+  /* Narrower button */
+  height: 40px;
+  /* Taller buttons */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.composer .btn.primary {
+  background-color: #007bff;
+  color: white;
+}
+
+.composer .btn.ghost {
+  background-color: #f1f1f1;
+  color: #333;
+  border: 1px solid #ccc;
+}
+.toast {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #333;
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  z-index: 1000;
+  font-weight: 500;
+}
 /*THIS IS FOR THE FLOATING TOOLBAR PART*/

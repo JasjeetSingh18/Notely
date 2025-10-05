@@ -8,7 +8,7 @@ import path from 'path';
 import { initializeApp, cert, applicationDefault, getApps } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
 import { getUid } from './firebase.mjs';
-import { promptAI, sendMessageToGemini } from './gemini.mjs';
+import { enhancePrompt, notePrompt, sendMessageToGemini } from './gemini.mjs';
 
 if (!getApps().length) {
     initializeApp({
@@ -130,9 +130,41 @@ app.delete('/api/docs/:id', async (req, res) => {
     res.json({ ok: true });
 });
 
-app.post('/api/ai/inline', (req, res) => {
-    const { prompt } = req.body ?? {};
-    res.json({ answer: `Mock explanation for: ${prompt}` });
+app.post("/api/ai/inline", async (req, res) => {
+    try {
+        const { prompt: highlight, mode, contextHtml: notes } = req.body ?? {};
+
+        if (!highlight) {
+            return res.status(400).json({ error: "Highlight is required" });
+        }
+
+        // Call Gemini with the highlight, full notes, and the selected mode
+        const answer = await notePrompt(highlight, notes, mode);
+
+        res.json({ answer });
+    } catch (err) {
+        console.error("Inline AI error:", err);
+        res.status(500).json({ error: "Failed to generate AI response" });
+    }
+});
+
+
+app.post("/api/ai/enhance", async (req, res) => {
+    try {
+        const { prompt: highlight, contextHtml: notes } = req.body ?? {};
+
+        if (!highlight) {
+            return res.status(400).json({ error: "Highlight is required" });
+        }
+
+        // Call Gemini with the highlight, full notes, and the selected mode
+        const answer = await enhancePrompt(highlight, notes, "enhance");
+
+        res.json({ answer });
+    } catch (err) {
+        console.error("Inline AI error:", err);
+        res.status(500).json({ error: "Failed to generate AI response" });
+    }
 });
 
 
