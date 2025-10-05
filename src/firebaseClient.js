@@ -41,12 +41,27 @@ export async function signInEmail(email, password) {
 }
 
 export async function signInWithGoogle() {
-  const result = await signInWithPopup(auth, googleProvider);
-  const user = result.user;
   try {
-    localStorage.setItem("uid", user.uid);
-  } catch {}
-  return user;
+    console.log("Attempting Google sign-in with popup...");
+    const result = await signInWithPopup(auth, googleProvider);
+    console.log("Sign-in popup completed, result:", result);
+    const user = result.user;
+    console.log("User object:", user);
+    if (user && user.uid) {
+      try {
+        localStorage.setItem("uid", user.uid);
+        console.log("UID saved to localStorage:", user.uid);
+      } catch (storageError) {
+        console.error("Failed to save to localStorage:", storageError);
+      }
+      return user;
+    } else {
+      throw new Error("No user object returned from Google sign-in");
+    }
+  } catch (error) {
+    console.error("Google sign-in error:", error.code, error.message);
+    throw error;
+  }
 }
 
 export async function logOut() {

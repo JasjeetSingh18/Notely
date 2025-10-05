@@ -96,18 +96,26 @@ const Auth = () => {
 
   const handleGoogleAuth = async () => {
     setIsLoading(true);
+    setFormError(""); // Clear any previous errors
     try {
+      console.log("Starting Google sign-in...");
       const user = await signInWithGoogle(); // user is already Firebase User
+      console.log("Google sign-in result:", user);
 
       if (user?.uid) {
+        console.log("User authenticated, uid:", user.uid);
         // localStorage is already set in firebase.mjs
+        console.log("Navigating to dashboard...");
         navigate("/dashboard");
       } else {
+        console.error("No user returned from Google sign-in");
         throw new Error("Google sign-in failed: no user returned.");
       }
     } catch (err) {
-      console.error(err);
-      setFormError(err.message); // show inline error instead of alert
+      console.error("Google auth error:", err);
+      setFormError(
+        err.message || "Failed to sign in with Google. Please try again."
+      ); // show inline error instead of alert
     } finally {
       setIsLoading(false);
     }
@@ -271,8 +279,7 @@ const Auth = () => {
                 </label>
               </div>
             ) : (
-              <div className="form-options">
-              </div>
+              <div className="form-options"></div>
             )}
 
             <button
