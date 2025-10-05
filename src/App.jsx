@@ -7,13 +7,16 @@ import "./index.css";
 
 export default function App() {
   const [messages, setMessages] = useState([
-    { role: "assistant", content: "Hi! Start typing or select text and click Ask AI." }
+    {
+      role: "assistant",
+      content: "Hi! Start typing or select text and click Ask AI.",
+    },
   ]);
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
 
   useEffect(() => {
-    console.log("App mounted");                    // <-- must appear once in Console
+    console.log("App mounted"); // <-- must appear once in Console
   }, []);
 
   const editor = useEditor({
@@ -39,53 +42,75 @@ export default function App() {
   async function askAIFromSelection() {
     const selected = getSelectedText();
     if (!selected) {
-      setMessages(m => [...m, { role: "assistant", content: "Select some text first." }]);
+      setMessages((m) => [
+        ...m,
+        { role: "assistant", content: "Select some text first." },
+      ]);
       return;
     }
     try {
-      const res = await fetch("/api/ai/inline", {
+      const data = await api("/api/ai/inline", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
+        body: {
           prompt: `Explain briefly: ${selected}`,
           contextHtml: editor.getHTML(),
-        }),
+        },
       });
-      const data = await res.json(); // { answer }
-      editor.chain().focus().insertContent(`<blockquote>${escapeHtml(data.answer)}</blockquote>`).run();
-      setMessages(m => [...m, { role: "user", content: selected }, { role: "assistant", content: data.answer }]);
+      editor
+        .chain()
+        .focus()
+        .insertContent(`<blockquote>${escapeHtml(data.answer)}</blockquote>`)
+        .run();
+      setMessages((m) => [
+        ...m,
+        { role: "user", content: selected },
+        { role: "assistant", content: data.answer },
+      ]);
     } catch {
       // fallback if Express isn't running
       const mock = `Mock answer for "${selected}". (Start the Express server to call the real /api.)`;
-      editor.chain().focus().insertContent(`<blockquote>${escapeHtml(mock)}</blockquote>`).run();
-      setMessages(m => [...m, { role: "user", content: selected }, { role: "assistant", content: mock }]);
+      editor
+        .chain()
+        .focus()
+        .insertContent(`<blockquote>${escapeHtml(mock)}</blockquote>`)
+        .run();
+      setMessages((m) => [
+        ...m,
+        { role: "user", content: selected },
+        { role: "assistant", content: mock },
+      ]);
     }
   }
 
   async function sendChat() {
-    console.log("sendChat() fired");           // <-- proves the click handler runs
+    console.log("sendChat() fired"); // <-- proves the click handler runs
     const prompt = input.trim();
     if (!prompt || sending) return;
 
     // optimistic UI
-    setMessages(m => [...m, { role: "user", content: prompt }]);
+    setMessages((m) => [...m, { role: "user", content: prompt }]);
     setInput("");
     setSending(true);
 
     try {
-      const contextHtml = editor?.getHTML?.() ?? "";  // safe if editor is null
-      const res = await fetch("/api/ai/chat", {
+      const contextHtml = editor?.getHTML?.() ?? ""; // safe if editor is null
+      const data = await api("/api/ai/chat", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt, contextHtml }),
+        body: { prompt, contextHtml },
       });
-
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
-      setMessages(m => [...m, { role: "assistant", content: data?.answer ?? "(no answer)" }]);
+      setMessages((m) => [
+        ...m,
+        { role: "assistant", content: data?.answer ?? "(no answer)" },
+      ]);
     } catch (err) {
-      console.error("sendChat error:", err);   // <-- check Console if this hits
-      setMessages(m => [...m, { role: "assistant", content: "(Mock) Start Express or fix /api/ai/chat" }]);
+      console.error("sendChat error:", err); // <-- check Console if this hits
+      setMessages((m) => [
+        ...m,
+        {
+          role: "assistant",
+          content: "(Mock) Start Express or fix /api/ai/chat",
+        },
+      ]);
     } finally {
       setSending(false);
     }
@@ -99,7 +124,9 @@ export default function App() {
           <span className="home-dot" /> <span>Untitled doc</span>
         </div>
         <div className="hdr-actions">
-          <button className="btn ghost" onClick={askAIFromSelection}>Ask AI</button>
+          <button className="btn ghost" onClick={askAIFromSelection}>
+            Ask AI
+          </button>
           <button className="btn primary">Share</button>
         </div>
       </header>
@@ -131,7 +158,10 @@ export default function App() {
 
           <form
             className="composer"
-            onSubmit={(e) => { e.preventDefault(); sendChat(); }}
+            onSubmit={(e) => {
+              e.preventDefault();
+              sendChat();
+            }}
           >
             <textarea
               placeholder="Ask AI"
@@ -152,8 +182,6 @@ export default function App() {
               {sending ? "Sending…" : "Send"}
             </button>
           </form>
-
-
         </aside>
       </div>
     </div>
@@ -161,5 +189,8 @@ export default function App() {
 }
 
 function escapeHtml(s) {
-  return s.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+  return s
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;");
 }
