@@ -45,14 +45,21 @@ if (process.env.NODE_ENV !== "production") {
 }
 app.use((req, res, next) => {
   const origin = req.headers.origin;
-  if (
-    allowedOrigins.includes("*") ||
-    (origin && allowedOrigins.includes(origin))
-  ) {
-    res.setHeader(
-      "Access-Control-Allow-Origin",
-      allowedOrigins.includes("*") ? "*" : origin
-    );
+  
+  // Determine if we should allow this origin
+  const shouldAllow = allowedOrigins.includes("*") || (origin && allowedOrigins.includes(origin));
+  
+  if (shouldAllow) {
+    // If using wildcard, don't set credentials (browser security restriction)
+    // If specific origin, return that origin and allow credentials
+    if (allowedOrigins.includes("*")) {
+      res.setHeader("Access-Control-Allow-Origin", "*");
+      // Don't set credentials with wildcard
+    } else if (origin) {
+      res.setHeader("Access-Control-Allow-Origin", origin);
+      res.setHeader("Access-Control-Allow-Credentials", "true");
+    }
+    
     res.setHeader(
       "Access-Control-Allow-Methods",
       "GET,POST,PUT,DELETE,OPTIONS"
@@ -61,8 +68,8 @@ app.use((req, res, next) => {
       "Access-Control-Allow-Headers",
       "Content-Type,Authorization,x-owner"
     );
-    res.setHeader("Access-Control-Allow-Credentials", "true");
   }
+  
   // Handle preflight
   if (req.method === "OPTIONS") return res.sendStatus(204);
   next();
