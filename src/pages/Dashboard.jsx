@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../utils/api";
-import { logOut, getUid } from "/server/firebase.mjs"; // <-- import logOut
+import { logOut, getUid } from "../firebaseClient";
 import "../css/dashboard.css";
 import logo from "../assets/NotelyLogo.png";
 

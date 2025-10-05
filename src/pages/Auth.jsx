@@ -3,7 +3,12 @@ import { useNavigate } from "react-router-dom";
 import "../css/auth.css";
 import logo from "../assets/NotelyLogo.png";
 import background from "../assets/Notelybackground.mp4";
-import {getUid, signUpEmail, signInEmail, signInWithGoogle } from "/server/firebase.mjs";
+import {
+  getUid,
+  signUpEmail,
+  signInEmail,
+  signInWithGoogle,
+} from "../firebaseClient";
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -53,60 +58,60 @@ const Auth = () => {
     resetForm();
   };
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  setIsLoading(true);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
 
-  try {
-    let user;
+    try {
+      let user;
 
-    if (isSignUp) {
-      if (formData.password !== formData.confirmPassword) {
-        // show inline error instead of alert
-        setFormError("Passwords don't match!");
-        setIsLoading(false);
-        return;
+      if (isSignUp) {
+        if (formData.password !== formData.confirmPassword) {
+          // show inline error instead of alert
+          setFormError("Passwords don't match!");
+          setIsLoading(false);
+          return;
+        }
+        if (!acceptTerms) {
+          setFormError("Please accept the terms and conditions");
+          setIsLoading(false);
+          return;
+        }
+
+        user = await signUpEmail(formData.email, formData.password);
+      } else {
+        user = await signInEmail(formData.email, formData.password);
       }
-      if (!acceptTerms) {
-        setFormError("Please accept the terms and conditions");
-        setIsLoading(false);
-        return;
+
+      if (user?.uid) {
+        navigate("/dashboard");
       }
-
-      user = await signUpEmail(formData.email, formData.password);
-    } else {
-      user = await signInEmail(formData.email, formData.password);
+    } catch (err) {
+      console.error(err);
+      setFormError(err.message); // display in UI
+    } finally {
+      setIsLoading(false);
     }
+  };
 
-    if (user?.uid) {
-      navigate("/dashboard"); 
+  const handleGoogleAuth = async () => {
+    setIsLoading(true);
+    try {
+      const user = await signInWithGoogle(); // user is already Firebase User
+
+      if (user?.uid) {
+        // localStorage is already set in firebase.mjs
+        navigate("/dashboard");
+      } else {
+        throw new Error("Google sign-in failed: no user returned.");
+      }
+    } catch (err) {
+      console.error(err);
+      setFormError(err.message); // show inline error instead of alert
+    } finally {
+      setIsLoading(false);
     }
-  } catch (err) {
-    console.error(err);
-    setFormError(err.message); // display in UI
-  } finally {
-    setIsLoading(false);
-  }
-};
-
-const handleGoogleAuth = async () => {
-  setIsLoading(true);
-  try {
-    const user = await signInWithGoogle(); // user is already Firebase User
-
-    if (user?.uid) {
-      // localStorage is already set in firebase.mjs
-      navigate("/dashboard");
-    } else {
-      throw new Error("Google sign-in failed: no user returned.");
-    }
-  } catch (err) {
-    console.error(err);
-    setFormError(err.message); // show inline error instead of alert
-  } finally {
-    setIsLoading(false);
-  }
-};
+  };
   const handleBackToHome = () => {
     navigate("/");
   };
