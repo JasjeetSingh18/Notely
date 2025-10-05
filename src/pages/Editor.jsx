@@ -7,6 +7,9 @@ import Underline from "@tiptap/extension-underline";
 import Link from "@tiptap/extension-link";
 import Highlight from "@tiptap/extension-highlight";
 import Toolbar, { Bubble as ToolbarBubble, Floating as ToolbarFloating } from "../components/Toolbar/Toolbar";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+
 
 import { api } from "../utils/api";
 import "../css/index.css";
@@ -24,6 +27,14 @@ export default function EditorPage() {
     const [loaded, setLoaded] = useState(false);
 
     const saveTimer = useRef(null);
+
+    const chatScrollRef = useRef(null); 
+    useEffect(() => {
+        const chatEl = chatScrollRef.current;
+        if (chatEl) {
+            chatEl.scrollTo({ top: chatEl.scrollHeight, behavior: "smooth" });
+        }
+    }, [messages]);
 
     const editor = useEditor({
         extensions: [
@@ -178,14 +189,18 @@ async function sendChat(e) {
 
                 <aside className="sidebar">
                     <div className="sidebar-header">AI Chat</div>
-                    <div className="chat-scroll">
+                        <div className="chat-scroll" ref={chatScrollRef}>
                         {messages.map((m, i) => (
                             <div key={i} className={`msg ${m.role}`}>
-                                <b>{m.role === "user" ? "You" : "AI"}</b>
-                                <div className="msg-body">{m.content}</div>
+                            <b>{m.role === "user" ? "You" : "AI"}</b>
+                            <div className="msg-body">
+                                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                {m.content}
+                                </ReactMarkdown>
+                            </div>
                             </div>
                         ))}
-                    </div>
+                        </div>
                     <form className="composer" onSubmit={sendChat}>
                         <textarea
                             placeholder="Ask AI"

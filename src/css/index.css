@@ -142,12 +142,20 @@ a {
 }
 
 /* Sidebar chat */
+/* Sidebar chat */
 .sidebar {
   border-left: 1px solid var(--border);
   background: var(--panel);
   display: grid;
   grid-template-rows: auto 1fr auto;
   height: 100%;
+  width: 380px;
+  /* increase width slightly */
+  min-width: 360px;
+  /* prevent shrinking too much */
+  padding: 0.8rem;
+  /* add some padding */
+  box-sizing: border-box;
 }
 
 .sidebar-header {
@@ -157,11 +165,9 @@ a {
 }
 
 .chat-scroll {
-  flex: 1;
   overflow-y: auto;
-  max-height: calc(100vh - 180px);
-  padding-right: 8px;
-  scroll-behavior: smooth;
+  max-height: calc(100vh - 200px);
+  padding-right: 0.5rem;
 }
 
 .msg {
@@ -169,12 +175,23 @@ a {
   border: 1px solid var(--border);
   border-radius: 10px;
   padding: 10px 12px;
+  margin-bottom: 0.6rem;
+  /* space between messages */
 }
 
 .msg .msg-body {
   white-space: pre-wrap;
+  word-wrap: break-word;
 }
 
+/* Make lists in chat look nice and not cut off */
+.msg-body ul,
+.msg-body ol {
+  margin-left: 1.2rem;
+  padding-left: 1.2rem;
+}
+
+/* Chat input composer */
 .composer {
   border-top: 1px solid var(--border);
   padding: 12px;

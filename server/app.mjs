@@ -8,7 +8,7 @@ import path from 'path';
 import { initializeApp, cert, applicationDefault, getApps } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
 import { getUid } from './firebase.mjs';
-import { promptAI } from './gemini.mjs';
+import { promptAI, sendMessageToGemini } from './gemini.mjs';
 
 if (!getApps().length) {
     initializeApp({
@@ -153,16 +153,14 @@ app.put("/api/docs/:id/chat", async (req, res) => {
 
 app.post("/api/ai/chat", async (req, res) => {
   try {
-    const { prompt } = req.body ?? {};
+    const { prompt, contextHtml, messages } = req.body ?? {};
 
     if (!prompt) {
       return res.status(400).json({ error: "Prompt is required" });
     }
 
-    // Wait for the AI to finish
-    const answer = await promptAI(prompt);
+    const answer = await sendMessageToGemini(prompt, contextHtml, messages ?? []);
 
-    // Send the full string as JSON
     res.json({ answer });
   } catch (err) {
     console.error(err);
