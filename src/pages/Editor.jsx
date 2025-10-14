@@ -11,6 +11,7 @@ import Toolbar, {
   Bubble as ToolbarBubble,
   Floating as ToolbarFloating,
 } from "../components/Toolbar/Toolbar";
+import FileMenu from "../components/FileMenu/FileMenu";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Document } from "@tiptap/extension-document";
@@ -35,6 +36,7 @@ export default function EditorPage() {
   const [lastMode, setLastMode] = useState(null);
   const [insertLabel, setInsertLabel] = useState("Insert");
   const [chatVisible, setChatVisible] = useState(true);
+  const [docTitle, setDocTitle] = useState("Untitled doc");
   const NonEmptyDocument = Document.extend({
     content: "block+",
   });
@@ -91,6 +93,7 @@ export default function EditorPage() {
 
       clearTimeout(saveTimer.current);
       saveTimer.current = setTimeout(() => {
+        setDocTitle(title); // Update local title state
         api(`/api/docs/${id}`, {
           method: "PUT",
           body: { title, contentHtml: html },
@@ -103,6 +106,7 @@ export default function EditorPage() {
     (async () => {
       try {
         const doc = await api(`/api/docs/${id}`);
+        setDocTitle(doc.title || "Untitled doc");
         editor?.commands?.setContent(
           doc.contentHtml || "<h1>Untitled doc</h1><p></p>"
         );
@@ -308,6 +312,7 @@ export default function EditorPage() {
           </button>
           <span className="sep">/</span>
           <span>Note:</span>
+          <FileMenu editor={editor} docId={id} docTitle={docTitle} />
         </div>
         <div className="hdr-actions">
           <button

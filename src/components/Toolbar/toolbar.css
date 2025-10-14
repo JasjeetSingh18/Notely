@@ -13,7 +13,7 @@
 /* main toolbar - Google Docs style */
 .tl-toolbar {
   position: fixed;
-  top: 64px;
+  top: 64px; /* Height of app header */
   left: 0;
   right: 420px;
   z-index: 90;

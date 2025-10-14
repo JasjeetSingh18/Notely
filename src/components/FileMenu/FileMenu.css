@@ -1,0 +1,225 @@
+/* File Menu Navigation Bar Styles */
+.file-menu {
+  display: inline-flex;
+  align-items: center;
+  padding: 0;
+  margin: 0 0 0 16px;
+  font-family: Arial, sans-serif;
+}
+
+.file-menu-items {
+  display: flex;
+  gap: 2px;
+  position: relative;
+}
+
+.menu-item-wrapper {
+  position: relative;
+}
+
+.menu-item {
+  padding: 6px 10px;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  font-size: 13px;
+  color: #5f6368;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  font-weight: 400;
+}
+
+.menu-item:hover,
+.menu-item.active {
+  background: #f1f3f4;
+  color: #202124;
+}
+
+/* Dropdown Menus */
+.dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  background: white;
+  border: 1px solid #dadce0;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  min-width: 240px;
+  padding: 8px 0;
+  z-index: 1002;
+  animation: dropdownFadeIn 0.15s ease-out;
+}
+
+@keyframes dropdownFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.file-dropdown,
+.edit-dropdown,
+.view-dropdown,
+.insert-dropdown,
+.format-dropdown {
+  left: auto;
+  right: auto;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  background: transparent;
+  border: none;
+  width: 100%;
+  text-align: left;
+  font-size: 14px;
+  color: #202124;
+  cursor: pointer;
+  transition: background-color 0.1s ease;
+  position: relative;
+}
+
+.dropdown-item:hover {
+  background: #f8f9fa;
+}
+
+.dropdown-item .item-icon {
+  width: 20px;
+  text-align: center;
+  font-size: 16px;
+  flex-shrink: 0;
+  color: #202124;
+  filter: grayscale(1);
+}
+
+.dropdown-item > span:nth-child(2) {
+  flex: 1;
+}
+
+.dropdown-item .shortcut {
+  font-size: 12px;
+  color: #5f6368;
+  margin-left: auto;
+}
+
+.dropdown-item .arrow {
+  font-size: 10px;
+  color: #5f6368;
+  margin-left: auto;
+}
+
+.dropdown-divider {
+  height: 1px;
+  background: #e8eaed;
+  margin: 8px 0;
+}
+
+/* Submenu styles */
+.submenu-trigger {
+  position: relative;
+}
+
+.submenu-trigger:hover .submenu {
+  display: block;
+}
+
+.submenu {
+  display: none;
+  position: absolute;
+  left: 100%;
+  top: -8px;
+  background: white;
+  border: 1px solid #dadce0;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  min-width: 220px;
+  padding: 8px 0;
+  z-index: 1003;
+  animation: submenuFadeIn 0.15s ease-out;
+}
+
+@keyframes submenuFadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.submenu .dropdown-item {
+  padding: 10px 16px;
+}
+
+.submenu .dropdown-item:hover {
+  background: #f8f9fa;
+}
+
+/* Save toast notification */
+.save-toast {
+  position: fixed;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #202124;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  z-index: 10000;
+  animation: toastSlideIn 0.3s ease-out, toastFadeOut 0.3s ease-out 1.7s;
+}
+
+@keyframes toastSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+@keyframes toastFadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+/* No need for editor-app padding since menu is inside header */
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .file-menu {
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+
+  .file-menu-items {
+    min-width: max-content;
+  }
+
+  .dropdown {
+    max-width: calc(100vw - 32px);
+  }
+
+  .submenu {
+    left: auto;
+    right: 100%;
+  }
+}
