@@ -104,9 +104,25 @@ const Auth = () => {
 
       if (user?.uid) {
         console.log("User authenticated, uid:", user.uid);
-        // localStorage is already set in firebase.mjs
+        // Ensure uid is stored (defensive)
+        try {
+          localStorage.setItem("uid", user.uid);
+        } catch (e) {
+          console.warn("Failed to write uid to localStorage:", e);
+        }
+
         console.log("Navigating to dashboard...");
+        // Primary navigation via react-router
         navigate("/dashboard");
+
+        // Fallback: if navigate doesn't trigger (rare), force a full reload after a short delay
+        setTimeout(() => {
+          const path = window.location.pathname;
+          if (path !== "/dashboard") {
+            console.log("Fallback: window.location -> /dashboard");
+            window.location.href = "/dashboard";
+          }
+        }, 500);
       } else {
         console.error("No user returned from Google sign-in");
         throw new Error("Google sign-in failed: no user returned.");
