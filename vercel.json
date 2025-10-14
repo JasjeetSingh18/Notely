@@ -5,6 +5,7 @@
   ],
   "routes": [
     { "src": "/api/(.*)", "dest": "/api/$1" },
-    { "src": "/(.*)", "dest": "/index.html" }
+    { "src": "^/((?:.+)\\.(?:js|css|map|png|jpg|jpeg|gif|svg|ico|json|txt|wasm|webmanifest))$", "headers": { "cache-control": "public, max-age=31536000, immutable" }, "dest": "/$1" },
+    { "src": "^(.*)$", "dest": "/index.html" }
   ]
 }
