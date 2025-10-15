@@ -15,6 +15,7 @@ dist-ssr
 # env files
 .env
 *.env
+.env.*
 server/.env
 
 # Editor directories and files
