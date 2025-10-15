@@ -34,7 +34,10 @@ app.use(express.json({ limit: "2mb" }));
 // CORS configuration: allow origins from ALLOW_ORIGIN (comma separated) or allow all in testing
 const allowedOriginsRaw = process.env.ALLOW_ORIGIN;
 let allowedOrigins = allowedOriginsRaw
-  ? allowedOriginsRaw.split(",").map((s) => s.trim()).filter(Boolean)
+  ? allowedOriginsRaw
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean)
   : [];
 // If the env var is missing or empty (for example an empty string), default to allow-all
 if (!allowedOrigins || allowedOrigins.length === 0) {
@@ -45,10 +48,11 @@ if (process.env.NODE_ENV !== "production") {
 }
 app.use((req, res, next) => {
   const origin = req.headers.origin;
-  
+
   // Determine if we should allow this origin
-  const shouldAllow = allowedOrigins.includes("*") || (origin && allowedOrigins.includes(origin));
-  
+  const shouldAllow =
+    allowedOrigins.includes("*") || (origin && allowedOrigins.includes(origin));
+
   if (shouldAllow) {
     // If using wildcard, don't set credentials (browser security restriction)
     // If specific origin, return that origin and allow credentials
@@ -59,7 +63,7 @@ app.use((req, res, next) => {
       res.setHeader("Access-Control-Allow-Origin", origin);
       res.setHeader("Access-Control-Allow-Credentials", "true");
     }
-    
+
     res.setHeader(
       "Access-Control-Allow-Methods",
       "GET,POST,PUT,DELETE,OPTIONS"
@@ -69,7 +73,7 @@ app.use((req, res, next) => {
       "Content-Type,Authorization,x-owner"
     );
   }
-  
+
   // Handle preflight
   if (req.method === "OPTIONS") return res.sendStatus(204);
   next();
@@ -197,8 +201,11 @@ app.post("/api/ai/inline", async (req, res) => {
 
     res.json({ answer });
   } catch (err) {
-    console.error("Inline AI error:", err);
-    res.status(500).json({ error: "Failed to generate AI response" });
+    console.error("Inline AI error:", err?.stack || err);
+    const payload = { error: "Failed to generate AI response" };
+    if (process.env.NODE_ENV !== "production")
+      payload.detail = err?.message || String(err);
+    res.status(500).json(payload);
   }
 });
 
@@ -215,8 +222,11 @@ app.post("/api/ai/enhance", async (req, res) => {
 
     res.json({ answer });
   } catch (err) {
-    console.error("Inline AI error:", err);
-    res.status(500).json({ error: "Failed to generate AI response" });
+    console.error("Enhance AI error:", err?.stack || err);
+    const payload = { error: "Failed to generate AI response" };
+    if (process.env.NODE_ENV !== "production")
+      payload.detail = err?.message || String(err);
+    res.status(500).json(payload);
   }
 });
 
@@ -251,8 +261,51 @@ app.post("/api/ai/chat", async (req, res) => {
 
     res.json({ answer });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Failed to generate AI response" });
+    console.error("Chat AI error:", err?.stack || err);
+    const payload = { error: "Failed to generate AI response" };
+    if (process.env.NODE_ENV !== "production")
+      payload.detail = err?.message || String(err);
+    res.status(500).json(payload);
+  }
+});
+
+// Simple health-check for AI client and configuration.
+// GET /api/ai/health returns { ok: true/false, hasKey: boolean }
+// If you pass ?test=1 it will attempt a lightweight test call to the AI (may consume quota).
+app.get("/api/ai/health", async (req, res) => {
+  try {
+    const hasKey = !!process.env.GEMINI_API_KEY;
+    const result = { ok: hasKey, hasKey };
+
+    if (req.query.test === "1") {
+      try {
+        // perform a minimal test call using notePrompt/promptAI if available
+        // We import lazily to avoid circular issues
+        const { promptAI } = await import("./gemini.mjs");
+        const text = await promptAI("Say hi");
+        result.tested = true;
+        result.testOk = Boolean(text && text.length > 0);
+        if (!result.testOk) result.testDetail = "empty response";
+      } catch (err) {
+        result.tested = true;
+        result.testOk = false;
+        result.testDetail = err?.message || String(err);
+      }
+    }
+
+    res.json(result);
+  } catch (err) {
+    console.error("AI health error:", err?.stack || err);
+    res
+      .status(500)
+      .json({
+        ok: false,
+        error: "health check failed",
+        detail:
+          process.env.NODE_ENV !== "production"
+            ? err?.message || String(err)
+            : undefined,
+      });
   }
 });
 
